@@ -130,7 +130,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.neo4j.driver/neo4j-java-driver-spring-boot-starter -->
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver-spring-boot-starter</artifactId>
+            <version>4.2.4.0</version>
+        </dependency>
     </dependencies>
 
     <build>

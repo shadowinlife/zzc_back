@@ -1,8 +1,9 @@
-package com.se.back.controller;
+package com.se.back.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import lombok.Getter;
+import lombok.Data;
 import lombok.ToString;
 
 import java.lang.reflect.ParameterizedType;
@@ -11,8 +12,9 @@ import java.lang.reflect.Type;
 /**
  * @author mgong
  */
-@Getter
+@Data
 @ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result<T> {
 
     private static final String REQUEST_ID = "requestId";
@@ -25,25 +27,21 @@ public class Result<T> {
 
     private String requestId;
 
-    private String errorCode;
+    private String status;
 
-    private String errorInfo;
+    private String info;
 
     private T data;
 
-    public Result(
-            String requestId,
-            String errorCode,
-            String errorInfo,
-            T data) {
+    public Result(String requestId, String status, String info, T data) {
         this.requestId = requestId;
-        this.errorCode = errorCode;
-        this.errorInfo = errorInfo;
+        this.status = status;
+        this.info = info;
         this.data = data;
     }
 
-    public static <T> Result<T> succResult(String requestId, T data) {
-        return new Result<T>(requestId, null, null, data);
+    public static <T> Result<T> successResult(String requestId, T data) {
+        return new Result<>(requestId, "0", "success", data);
     }
 
     public static <T> Result<T> errResult(
@@ -53,12 +51,12 @@ public class Result<T> {
         return new Result<T>(requestId, errorCode, message, null);
     }
 
-    public static String succResultString(String requestId, Object data) {
+    public static String successResultString(String requestId, Object data) {
         Result<Object> result = new Result<>(requestId, null, null, data);
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty(REQUEST_ID, result.getRequestId());
-        jsonObject.addProperty(ERROR_CODE, result.getErrorCode());
-        jsonObject.addProperty(ERROR_INFO, result.getErrorInfo());
+        jsonObject.addProperty(ERROR_CODE, result.getStatus());
+        jsonObject.addProperty(ERROR_INFO, result.getInfo());
         jsonObject.addProperty(DATA, result.getData().toString());
         return jsonObject.toString();
     }

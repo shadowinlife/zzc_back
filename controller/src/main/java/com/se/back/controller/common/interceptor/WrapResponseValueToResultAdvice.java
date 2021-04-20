@@ -1,6 +1,7 @@
-package com.se.back.controller.interceptor;
+package com.se.back.controller.common.interceptor;
 
 import com.google.gson.JsonSyntaxException;
+import com.se.back.common.Result;
 import com.se.back.common.holder.RequestIdHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -22,7 +23,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.stream.StreamSupport;
 
 import com.se.back.common.utils.LogicException;
-import com.se.back.controller.Result;
+
 
 @Slf4j
 @ControllerAdvice(WrapResponseValueToResultAdvice.SCAN_PACKAGE)
@@ -43,9 +44,9 @@ public class WrapResponseValueToResultAdvice implements ResponseBodyAdvice<Objec
                                   ServerHttpRequest serverHttpRequest,
                                   ServerHttpResponse serverHttpResponse) {
         if (o instanceof String) {
-            return Result.succResultString(RequestIdHolder.getRequestId(), o);
+            return Result.successResultString(RequestIdHolder.getRequestId(), o);
         }
-        return o instanceof Result ? o : Result.succResult(RequestIdHolder.getRequestId(), o);
+        return o instanceof Result ? o : Result.successResult(RequestIdHolder.getRequestId(), o);
     }
 
     /**

@@ -46,8 +46,7 @@ public class RelationSearchServiceImpl implements RelationSearchService {
                 pathLength,
                 RelationSearchConstant.QUERY_PATH_LIMIT
         );
-        System.out.println("searchCql = " + searchCql);
-        return searchPath(searchCql, fromCompany);
+        return searchPath(searchCql);
     }
 
     @Override
@@ -55,7 +54,7 @@ public class RelationSearchServiceImpl implements RelationSearchService {
         return null;
     }
 
-    private List<List<RelationShipVO>> searchPath(String searchCql, String baseFromCompany) {
+    private List<List<RelationShipVO>> searchPath(String searchCql) {
         List<List<RelationShipVO>> relationShipVOList = new ArrayList<>();
         Session session = driver.session();
         Result result = session.run(searchCql);
@@ -63,54 +62,59 @@ public class RelationSearchServiceImpl implements RelationSearchService {
         for (Record record : recordList) {
 
             List<RelationShipVO> relationShipVOSubList = new ArrayList<>();
-            String fromCompany = baseFromCompany;
             Path path = record.get("path").asPath();
             for (Path.Segment segment : path) {
                 Relationship relationship = segment.relationship();
-
+                long startNodeId = relationship.startNodeId();
+                System.out.println("startNodeId = " + startNodeId);
                 Node startNode = segment.start();
                 String startCompany = startNode.get("name").asString();
                 long startCompanyId = startNode.id();
-                Integer startCompanyTypeId = Integer.valueOf(relationship.get("start").asString());
-                CompanyTypeEnum startCompanyType = getCompanyTypeEnum(startCompanyTypeId);
+                System.out.println("startCompanyId = " + startCompanyId);
 
+
+                System.out.println("startCompany = " + startCompany);
                 Node endNode = segment.end();
                 String endCompany = endNode.get("name").asString();
                 long endCompanyId = endNode.id();
+
+                Integer startCompanyTypeId = Integer.valueOf(relationship.get("start").asString());
                 Integer endCompanyTypeId = Integer.valueOf(relationship.get("end").asString());
-                CompanyTypeEnum endCompanyType = getCompanyTypeEnum(endCompanyTypeId);
+                System.out.println("endCompanyTypeId = " + endCompanyTypeId);
+                CompanyTypeEnum endCompanyType;
+                CompanyTypeEnum startCompanyType;
+                if (Objects.equals(startNodeId, startCompanyId)) {
+                    startCompanyType = getCompanyTypeEnum(startCompanyTypeId);
+                     endCompanyType = getCompanyTypeEnum(endCompanyTypeId);
+                }else {
+                    startCompanyType = getCompanyTypeEnum(endCompanyTypeId);
+                    endCompanyType = getCompanyTypeEnum(startCompanyTypeId);
+                }
+
+                System.out.println("endCompanyType = " + endCompanyType);
+                System.out.println("endCompany = " + endCompany);
+
 
                 long relationShipId = relationship.id();
                 String esIndex = relationship.get("index").asString();
                 String esDocId = relationship.get("docId").asString();
+                System.out.println("esDocId = " + esDocId);
                 String publishTime = relationship.get("publishTime").asString();
-
+                System.out.println("relationship = " + relationship.type());
+                System.out.println("=============================");
                 RelationShipVO relationShipVO = new RelationShipVO();
                 relationShipVO.setEdgeId(relationShipId);
                 relationShipVO.setElasticSearchIndexName(esIndex);
                 relationShipVO.setElasticSearchDocId(esDocId);
                 relationShipVO.setPublishTime(publishTime);
-                if (Objects.equals(startCompany, fromCompany)) {
-                    fromCompany = endCompany;
+                relationShipVO.setFromCompanyId(startCompanyId);
+                relationShipVO.setFromCompany(startCompany);
+                relationShipVO.setFromCompanyType(startCompanyType);
 
-                    relationShipVO.setFromCompanyId(startCompanyId);
-                    relationShipVO.setFromCompany(startCompany);
-                    relationShipVO.setFromCompanyType(startCompanyType);
+                relationShipVO.setToCompanyId(endCompanyId);
+                relationShipVO.setToCompany(endCompany);
+                relationShipVO.setToCompanyType(endCompanyType);
 
-                    relationShipVO.setToCompanyId(endCompanyId);
-                    relationShipVO.setToCompany(endCompany);
-                    relationShipVO.setToCompanyType(endCompanyType);
-                } else {
-                    fromCompany = startCompany;
-
-                    relationShipVO.setFromCompanyId(endCompanyId);
-                    relationShipVO.setFromCompany(endCompany);
-                    relationShipVO.setFromCompanyType(endCompanyType);
-
-                    relationShipVO.setToCompanyId(startCompanyId);
-                    relationShipVO.setToCompany(startCompany);
-                    relationShipVO.setToCompanyType(startCompanyType);
-                }
                 relationShipVOSubList.add(relationShipVO);
             }
             relationShipVOList.add(relationShipVOSubList);

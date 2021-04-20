@@ -1,5 +1,7 @@
 package com.se.back.controller.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @author: 信长华
  * @date: 2021/4/19 14:41
@@ -20,10 +22,16 @@ public enum CompanyTypeEnum {
         this.code = code;
     }
 
+    /**
+     * Jackson转成json的时候自动调用此数值
+     *
+     * @return
+     */
+
     public Integer getCode() {
         return code;
     }
-
+    @JsonValue
     public String getMessage() {
         return message;
     }

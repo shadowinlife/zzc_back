@@ -1,4 +1,4 @@
-package com.se.back.controller.interceptor;
+package com.se.back.controller.common.interceptor;
 
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;

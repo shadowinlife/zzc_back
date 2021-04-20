@@ -1,11 +1,11 @@
 package com.se.back.controller.controller;
 
-import com.se.back.controller.Result;
+import com.se.back.common.Result;
 import com.se.back.controller.constant.RelationSearchConstant;
 import com.se.back.controller.entity.ao.RelationSearchAO;
+import com.se.back.controller.entity.vo.BasePageVO;
 import com.se.back.controller.entity.vo.RelationShipVO;
 import com.se.back.controller.service.RelationSearchService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,8 +26,11 @@ import java.util.List;
 @RestController
 @RequestMapping("relation")
 public class RelationController {
-    @Autowired
-    private RelationSearchService relationSearchService;
+    private final RelationSearchService relationSearchService;
+
+    public RelationController(RelationSearchService relationSearchService) {
+        this.relationSearchService = relationSearchService;
+    }
 
     /**
      * 使用neo4j, 查询从公司到公司的路径
@@ -43,11 +46,18 @@ public class RelationController {
         for (int pathLength = RelationSearchConstant.QUERY_PATH_LENGTH_MIN_BY_COMPANY;
              pathLength < RelationSearchConstant.QUERY_PATH_LENGTH_MAX_BY_COMPANY + 1; pathLength++) {
             relationShipVOList = relationSearchService.searchPathByCompany(fromCompany, toCompany, pathLength);
-            if (relationShipVOList.size() > 1) {
-                return Result.succResult(null, relationShipVOList);
+            System.out.println("relationShipVOList = " + relationShipVOList);
+            long length = relationShipVOList.size();
+            if (length > 0) {
+                BasePageVO<List<RelationShipVO>> basePageVO = new BasePageVO<>();
+                basePageVO.setRelationship(relationShipVOList);
+                basePageVO.setTotalCount(length);
+                return Result.successResult(null, basePageVO);
             }
         }
 
-        return Result.succResult(null, null);
+        return Result.successResult(null, null);
     }
+
+
 }

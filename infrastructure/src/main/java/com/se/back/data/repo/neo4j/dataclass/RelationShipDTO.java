@@ -1,7 +1,8 @@
-package com.se.back.controller.entity.vo;
+package com.se.back.data.repo.neo4j.dataclass;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.se.back.controller.enums.CompanyTypeEnum;
+
+import com.se.back.data.enums.CompanyTypeEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.io.Serializable;
  * @version: 1.0
  */
 @Data
-public class RelationShipVO implements Serializable {
+public class RelationShipDTO implements Serializable {
 
     private static final long serialVersionUID = -7439512793662106124L;
     /**

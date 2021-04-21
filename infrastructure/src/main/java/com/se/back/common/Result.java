@@ -27,13 +27,13 @@ public class Result<T> {
 
     private String requestId;
 
-    private String status;
+    private Object status;
 
     private String info;
 
     private T data;
 
-    public Result(String requestId, String status, String info, T data) {
+    public Result(String requestId, Object status, String info, T data) {
         this.requestId = requestId;
         this.status = status;
         this.info = info;
@@ -41,7 +41,14 @@ public class Result<T> {
     }
 
     public static <T> Result<T> successResult(String requestId, T data) {
-        return new Result<>(requestId, "0", "success", data);
+    return new Result<>(requestId, ResponseEnum.SUCCESS.getCode(), ResponseEnum.SUCCESS.getMessage(), data);
+    }
+
+    public static <T> Result<T> errResult(
+            String requestId,
+            ResponseEnum responseEnum
+    ) {
+        return new Result<>(requestId, responseEnum.getCode(), responseEnum.getMessage(), null);
     }
 
     public static <T> Result<T> errResult(
@@ -55,19 +62,19 @@ public class Result<T> {
         Result<Object> result = new Result<>(requestId, null, null, data);
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty(REQUEST_ID, result.getRequestId());
-        jsonObject.addProperty(ERROR_CODE, result.getStatus());
+//        jsonObject.addProperty(ERROR_CODE, result.getStatus());
         jsonObject.addProperty(ERROR_INFO, result.getInfo());
         jsonObject.addProperty(DATA, result.getData().toString());
         return jsonObject.toString();
     }
 
-    public static Result fromJson(String json, Class clazz) {
+    public static <T> Result<T> fromJson(String json, Class<T> clazz) {
         Type objectType = type(Result.class, clazz);
         Gson gson = new Gson();
         return gson.fromJson(json, objectType);
     }
 
-    static ParameterizedType type(final Class raw, final Type... args) {
+    static <T> ParameterizedType type(final Class<T> raw, final Type... args) {
         return new ParameterizedType() {
             @Override
             public Type[] getActualTypeArguments() {

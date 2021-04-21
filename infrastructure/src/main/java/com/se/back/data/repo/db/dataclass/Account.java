@@ -1,4 +1,4 @@
-package com.se.back.data.repo.db.bean;
+package com.se.back.data.repo.db.dataclass;
 
 import java.util.Date;
 import javax.annotation.Generated;

@@ -17,9 +17,10 @@ public class RelationSearchAO implements Serializable {
 
     private static final long serialVersionUID = 2840135232665084758L;
 
-    @NotNull(message = "源公司不能为空")
+    @NotNull(message = "源公司或者地区不能为空")
     @JsonProperty(value = "from")
     private String fromCompany;
+
     @NotNull(message = "目标公司不能为空")
     @JsonProperty(value = "to")
     private String toCompany;

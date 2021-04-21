@@ -1,21 +1,16 @@
 package com.se.back.controller.service.impl;
 
 import com.se.back.controller.constant.RelationSearchConstant;
-import com.se.back.controller.entity.vo.RelationShipVO;
-import com.se.back.controller.enums.CompanyTypeEnum;
 import com.se.back.controller.service.RelationSearchService;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.Record;
-import org.neo4j.driver.Result;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.types.Node;
-import org.neo4j.driver.types.Path;
-import org.neo4j.driver.types.Relationship;
+import com.se.back.data.repo.neo4j.dataclass.RelationShipDTO;
+import com.se.back.data.repo.neo4j.mapper.Neo4jRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 
 /**
@@ -25,16 +20,20 @@ import java.util.Objects;
  * @description: TODO
  * @version: 1.0
  */
+@Slf4j
 @Service
 public class RelationSearchServiceImpl implements RelationSearchService {
-    private final Driver driver;
+    @Autowired
+    private Neo4jRepository neo4jRepository;
 
-    public RelationSearchServiceImpl(Driver driver) {
-        this.driver = driver;
-    }
-
+    /**
+     * @param fromCompany 起始公司
+     * @param toCompany   终止公司
+     * @param pathLength
+     * @return
+     */
     @Override
-    public List<List<RelationShipVO>> searchPathByCompany(String fromCompany, String toCompany, Integer pathLength) {
+    public List<List<RelationShipDTO>> searchPathByCompany(String fromCompany, String toCompany, Integer pathLength) {
 
         String searchCql = String.format("MATCH " +
                         "(company1:Company{name:\"%s\"})," +
@@ -46,88 +45,53 @@ public class RelationSearchServiceImpl implements RelationSearchService {
                 pathLength,
                 RelationSearchConstant.QUERY_PATH_LIMIT
         );
-        return searchPath(searchCql);
+        return neo4jRepository.searchPath(searchCql);
     }
 
     @Override
-    public List<List<RelationShipVO>> searchPathByRegion(String fromCompany, String toCompany, Integer pathLength) {
-        return null;
-    }
-
-    private List<List<RelationShipVO>> searchPath(String searchCql) {
-        List<List<RelationShipVO>> relationShipVOList = new ArrayList<>();
-        Session session = driver.session();
-        Result result = session.run(searchCql);
-        List<Record> recordList = result.list();
-        for (Record record : recordList) {
-
-            List<RelationShipVO> relationShipVOSubList = new ArrayList<>();
-            Path path = record.get("path").asPath();
-            for (Path.Segment segment : path) {
-                Relationship relationship = segment.relationship();
-                long startNodeId = relationship.startNodeId();
-                System.out.println("startNodeId = " + startNodeId);
-                Node startNode = segment.start();
-                String startCompany = startNode.get("name").asString();
-                long startCompanyId = startNode.id();
-                System.out.println("startCompanyId = " + startCompanyId);
-
-
-                System.out.println("startCompany = " + startCompany);
-                Node endNode = segment.end();
-                String endCompany = endNode.get("name").asString();
-                long endCompanyId = endNode.id();
-
-                Integer startCompanyTypeId = Integer.valueOf(relationship.get("start").asString());
-                Integer endCompanyTypeId = Integer.valueOf(relationship.get("end").asString());
-                System.out.println("endCompanyTypeId = " + endCompanyTypeId);
-                CompanyTypeEnum endCompanyType;
-                CompanyTypeEnum startCompanyType;
-                if (Objects.equals(startNodeId, startCompanyId)) {
-                    startCompanyType = getCompanyTypeEnum(startCompanyTypeId);
-                     endCompanyType = getCompanyTypeEnum(endCompanyTypeId);
-                }else {
-                    startCompanyType = getCompanyTypeEnum(endCompanyTypeId);
-                    endCompanyType = getCompanyTypeEnum(startCompanyTypeId);
-                }
-
-                System.out.println("endCompanyType = " + endCompanyType);
-                System.out.println("endCompany = " + endCompany);
-
-
-                long relationShipId = relationship.id();
-                String esIndex = relationship.get("index").asString();
-                String esDocId = relationship.get("docId").asString();
-                System.out.println("esDocId = " + esDocId);
-                String publishTime = relationship.get("publishTime").asString();
-                System.out.println("relationship = " + relationship.type());
-                System.out.println("=============================");
-                RelationShipVO relationShipVO = new RelationShipVO();
-                relationShipVO.setEdgeId(relationShipId);
-                relationShipVO.setElasticSearchIndexName(esIndex);
-                relationShipVO.setElasticSearchDocId(esDocId);
-                relationShipVO.setPublishTime(publishTime);
-                relationShipVO.setFromCompanyId(startCompanyId);
-                relationShipVO.setFromCompany(startCompany);
-                relationShipVO.setFromCompanyType(startCompanyType);
-
-                relationShipVO.setToCompanyId(endCompanyId);
-                relationShipVO.setToCompany(endCompany);
-                relationShipVO.setToCompanyType(endCompanyType);
-
-                relationShipVOSubList.add(relationShipVO);
-            }
-            relationShipVOList.add(relationShipVOSubList);
+    public List<List<RelationShipDTO>> searchPathByRegion(
+            String fromProvince, String fromCity, String fromCounty, String toCompany, Integer pathLength) {
+        String searchCql = null;
+        if (StringUtils.isNotBlank(fromCounty)) {
+            searchCql = String.format("MATCH " +
+                            "(company1:Company{county:\"%s\"})," +
+                            "(company2:Company{name:\"%s\"}), " +
+                            "path=(company1)-[*..%d]-(company2)  " +
+                            "return path, LENGTH(path) as distance ORDER BY distance ASC limit %d",
+                    fromCounty,
+                    toCompany,
+                    pathLength,
+                    RelationSearchConstant.QUERY_PATH_LIMIT
+            );
+        } else if (StringUtils.isNotBlank(fromCity)) {
+            searchCql = String.format("MATCH " +
+                            "(company1:Company{city:\"%s\"})," +
+                            "(company2:Company{name:\"%s\"}), " +
+                            "path=(company1)-[*..%d]-(company2)  " +
+                            "return path, LENGTH(path) as distance ORDER BY distance ASC limit %d",
+                    fromCity,
+                    toCompany,
+                    pathLength,
+                    RelationSearchConstant.QUERY_PATH_LIMIT
+            );
+        } else if (StringUtils.isNotBlank(fromProvince)) {
+            searchCql = String.format("MATCH " +
+                            "(company1:Company{province:\"%s\"})," +
+                            "(company2:Company{name:\"%s\"}), " +
+                            "path=(company1)-[*..%d]-(company2)  " +
+                            "return path, LENGTH(path) as distance ORDER BY distance ASC limit %d",
+                    fromProvince,
+                    toCompany,
+                    pathLength,
+                    RelationSearchConstant.QUERY_PATH_LIMIT
+            );
         }
-        return relationShipVOList;
+
+        if (searchCql == null) {
+            return Collections.emptyList();
+        }
+        return neo4jRepository.searchPath(searchCql);
     }
 
-    private CompanyTypeEnum getCompanyTypeEnum(Integer CompanyTypeId) {
-        for (CompanyTypeEnum value : CompanyTypeEnum.values()) {
-            if (Objects.equals(value.getCode(), CompanyTypeId)) {
-                return value;
-            }
-        }
-        return null;
-    }
+
 }

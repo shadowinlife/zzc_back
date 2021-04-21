@@ -1,4 +1,4 @@
-package com.se.back.controller.enums;
+package com.se.back.data.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

@@ -1,18 +1,21 @@
 package com.se.back.controller.controller;
 
+import com.se.back.common.ResponseEnum;
 import com.se.back.common.Result;
 import com.se.back.controller.constant.RelationSearchConstant;
 import com.se.back.controller.entity.ao.RelationSearchAO;
 import com.se.back.controller.entity.vo.BasePageVO;
-import com.se.back.controller.entity.vo.RelationShipVO;
+import com.se.back.controller.service.RegionService;
 import com.se.back.controller.service.RelationSearchService;
+import com.se.back.data.repo.es.dataclass.RegionDTO;
+import com.se.back.data.repo.neo4j.dataclass.RelationShipDTO;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,9 +30,11 @@ import java.util.List;
 @RequestMapping("relation")
 public class RelationController {
     private final RelationSearchService relationSearchService;
+    private final RegionService regionService;
 
-    public RelationController(RelationSearchService relationSearchService) {
+    public RelationController(RelationSearchService relationSearchService, RegionService regionService) {
         this.relationSearchService = relationSearchService;
+        this.regionService = regionService;
     }
 
     /**
@@ -38,18 +43,18 @@ public class RelationController {
      * @param relationSearchAO
      * @return
      */
-    @RequestMapping(value = "search", method = RequestMethod.POST)
-    public Result<Object> search(@Valid @RequestBody RelationSearchAO relationSearchAO) {
+    @RequestMapping(value = "company", method = RequestMethod.POST)
+    public Result<Object> searchPathByCompany(@Valid @RequestBody RelationSearchAO relationSearchAO) {
         String fromCompany = relationSearchAO.getFromCompany();
         String toCompany = relationSearchAO.getToCompany();
-        List<List<RelationShipVO>> relationShipVOList = new ArrayList<>();
+
         for (int pathLength = RelationSearchConstant.QUERY_PATH_LENGTH_MIN_BY_COMPANY;
-             pathLength < RelationSearchConstant.QUERY_PATH_LENGTH_MAX_BY_COMPANY + 1; pathLength++) {
-            relationShipVOList = relationSearchService.searchPathByCompany(fromCompany, toCompany, pathLength);
+             pathLength <= RelationSearchConstant.QUERY_PATH_LENGTH_MAX_BY_COMPANY; pathLength++) {
+            List<List<RelationShipDTO>> relationShipVOList = relationSearchService.searchPathByCompany(fromCompany, toCompany, pathLength);
             System.out.println("relationShipVOList = " + relationShipVOList);
             long length = relationShipVOList.size();
             if (length > 0) {
-                BasePageVO<List<RelationShipVO>> basePageVO = new BasePageVO<>();
+                BasePageVO<List<RelationShipDTO>> basePageVO = new BasePageVO<>();
                 basePageVO.setRelationship(relationShipVOList);
                 basePageVO.setTotalCount(length);
                 return Result.successResult(null, basePageVO);
@@ -59,5 +64,39 @@ public class RelationController {
         return Result.successResult(null, null);
     }
 
+    /**
+     * 查询地区到公司的路径
+     *
+     * @param relationSearchAO
+     * @return
+     */
+    @RequestMapping(value = "region", method = RequestMethod.POST)
+    public Result<Object> searchPathByRegion(@Valid @RequestBody RelationSearchAO relationSearchAO) throws IOException {
+        String fromRegion = relationSearchAO.getFromCompany();
+        String toCompany = relationSearchAO.getToCompany();
+        // 获取详细的省市县信息
+        RegionDTO regionDTO = regionService.makeRegionDto(fromRegion);
+        if (regionDTO == null) {
+            return Result.errResult(null, ResponseEnum.RELATION_NO_REGION);
+        }
+
+        String province = regionDTO.getProvince();
+        String city = regionDTO.getCity();
+        String county = regionDTO.getCounty();
+        for (int pathLength = RelationSearchConstant.QUERY_PATH_LENGTH_MIN_BY_REGION;
+             pathLength <= RelationSearchConstant.QUERY_PATH_LENGTH_MAX_BY_REGION; pathLength++) {
+            List<List<RelationShipDTO>> relationShipVOList = relationSearchService.searchPathByRegion(
+                    province, city, county, toCompany, pathLength);
+            long length = relationShipVOList.size();
+            if (length > 0) {
+                BasePageVO<List<RelationShipDTO>> basePageVO = new BasePageVO<>();
+                basePageVO.setRelationship(relationShipVOList);
+                basePageVO.setTotalCount(length);
+                return Result.successResult(null, basePageVO);
+            }
+        }
+
+        return Result.successResult(null, null);
+    }
 
 }

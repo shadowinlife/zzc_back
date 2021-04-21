@@ -1,6 +1,6 @@
 package com.se.back.controller.service;
 
-import com.se.back.controller.entity.vo.RelationShipVO;
+import com.se.back.data.repo.neo4j.dataclass.RelationShipDTO;
 
 import java.util.List;
 
@@ -20,10 +20,10 @@ public interface RelationSearchService {
      * @param toCompany   终止公司
      * @return
      */
-    List<List<RelationShipVO>> searchPathByCompany(String fromCompany, String toCompany, Integer pathLength);
+    List<List<RelationShipDTO>> searchPathByCompany(String fromCompany, String toCompany, Integer pathLength);
 
     /**
      * 地区到公司的路径
      */
-    List<List<RelationShipVO>> searchPathByRegion(String fromCompany, String toCompany, Integer pathLength);
+    List<List<RelationShipDTO>> searchPathByRegion(String fromProvince, String fromCity, String fromCounty, String toCompany, Integer pathLength);
 }

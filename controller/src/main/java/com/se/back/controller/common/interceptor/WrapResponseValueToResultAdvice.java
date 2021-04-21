@@ -1,8 +1,10 @@
 package com.se.back.controller.common.interceptor;
 
 import com.google.gson.JsonSyntaxException;
+import com.se.back.common.ResponseEnum;
 import com.se.back.common.Result;
 import com.se.back.common.holder.RequestIdHolder;
+import com.se.back.common.util.LogicException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -21,8 +23,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.stream.StreamSupport;
-
-import com.se.back.common.utils.LogicException;
 
 
 @Slf4j
@@ -75,11 +75,11 @@ public class WrapResponseValueToResultAdvice implements ResponseBodyAdvice<Objec
 
         // 获取violation的最后一个元素,也就是具体的错误对象的名字
         String paramName = StreamSupport.stream(violation.getPropertyPath().spliterator(), false)
-                                        .reduce((first, second) -> second)
-                                        .get()
-                                        .getName();
+                .reduce((first, second) -> second)
+                .get()
+                .getName();
         // 返回结果
-        return Result.errResult(RequestIdHolder.getRequestId(), "InvalidParameter", paramName);
+        return Result.errResult(RequestIdHolder.getRequestId(), ResponseEnum.PARAMS_ERROR);
     }
 
     /**
@@ -90,7 +90,7 @@ public class WrapResponseValueToResultAdvice implements ResponseBodyAdvice<Objec
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public Result<String> handleInvalidJson(JsonSyntaxException e) {
         log.error("Input Invalid Content", e);
-        return Result.errResult(RequestIdHolder.getRequestId(), "InvalidParameter", "Input parameters invalid");
+        return Result.errResult(RequestIdHolder.getRequestId(), ResponseEnum.PARAMS_ERROR);
     }
 
     /**
@@ -101,7 +101,7 @@ public class WrapResponseValueToResultAdvice implements ResponseBodyAdvice<Objec
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public Result<String> handleTypeException(MethodArgumentTypeMismatchException e) {
         log.error("Input Invalid Type", e);
-        return Result.errResult(RequestIdHolder.getRequestId(), "InvalidParameter", "Parameter Type Is Illegal");
+        return Result.errResult(RequestIdHolder.getRequestId(), ResponseEnum.PARAMS_ERROR);
     }
 
     /**
@@ -112,7 +112,7 @@ public class WrapResponseValueToResultAdvice implements ResponseBodyAdvice<Objec
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public Result<String> handleMissParamException(MissingServletRequestParameterException e) {
         log.error("Input Invalid Type", e);
-        return Result.errResult(RequestIdHolder.getRequestId(), "InvalidParameter", "Parameter Missing");
+        return Result.errResult(RequestIdHolder.getRequestId(), ResponseEnum.PARAMS_ERROR);
     }
 
 
@@ -122,7 +122,6 @@ public class WrapResponseValueToResultAdvice implements ResponseBodyAdvice<Objec
     public Result<String> handleException(Exception e) {
         log.error("Server Inner Error", e);
         return Result.errResult(RequestIdHolder.getRequestId(),
-                                "ServerError",
-                                "World Crash");
+                ResponseEnum.INTERNAL_SERVER_ERROR);
     }
 }

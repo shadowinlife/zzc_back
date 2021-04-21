@@ -8,7 +8,7 @@
                         userId="root"
                         password="gongmeng"/>
 
-        <javaModelGenerator targetPackage="com.se.back.data.repo.db.bean" targetProject="src/main/java"/>
+        <javaModelGenerator targetPackage="com.se.back.data.repo.db.dataclass" targetProject="src/main/java"/>
 
         <javaClientGenerator targetPackage="com.se.back.data.repo.db.mapper" targetProject="src/main/java"/>
 

@@ -2,7 +2,7 @@ package com.se.back.data.repo.db.mapper;
 
 import static com.se.back.data.repo.db.mapper.AccountDynamicSqlSupport.*;
 
-import com.se.back.data.repo.db.bean.Account;
+import com.se.back.data.repo.db.dataclass.Account;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Generated;

@@ -1,9 +1,9 @@
 package com.se.back.data.repo.db.repo;
 
-import com.se.back.common.utils.BytesUtils;
+import com.se.back.common.util.BytesUtils;
 import com.se.back.data.repo.db.mapper.AccountMapper;
-import com.se.back.data.repo.db.bean.Account;
-import com.se.back.common.utils.LogicException;
+import com.se.back.data.repo.db.dataclass.Account;
+import com.se.back.common.util.LogicException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

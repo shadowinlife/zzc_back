@@ -3,7 +3,7 @@ package com.se.back.data.repo.db.mapper;
 import static com.se.back.data.repo.db.mapper.AlembicVersionDynamicSqlSupport.*;
 import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
-import com.se.back.data.repo.db.bean.AlembicVersion;
+import com.se.back.data.repo.db.dataclass.AlembicVersion;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Generated;

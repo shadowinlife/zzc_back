@@ -1,4 +1,4 @@
-package com.se.back.common.utils;
+package com.se.back.common.util;
 
 import lombok.Getter;
 import lombok.NonNull;

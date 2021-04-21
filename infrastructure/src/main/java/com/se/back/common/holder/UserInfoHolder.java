@@ -8,7 +8,7 @@ import com.se.back.data.enums.UserType;
  */
 public class UserInfoHolder {
 
-    private static ThreadLocal<UserInfo> USER_INFO = new ThreadLocal<>();
+    private static final ThreadLocal<UserInfo> USER_INFO = new ThreadLocal<>();
 
     public static UserInfo getUserInfo() {
         return USER_INFO.get();

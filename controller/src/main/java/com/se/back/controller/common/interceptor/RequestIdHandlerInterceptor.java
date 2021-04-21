@@ -2,6 +2,7 @@ package com.se.back.controller.common.interceptor;
 
 import com.se.back.common.holder.RequestIdHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,9 @@ public class RequestIdHandlerInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler) {
         String requestId = request.getHeader(REQUEST_ID_KEY);
+        if (StringUtils.isBlank(requestId)) {
+            requestId = RequestIdHolder.makeRequestId();
+        }
         RequestIdHolder.setRequestId(requestId);
         return true;
     }

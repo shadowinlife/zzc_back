@@ -1,20 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <contextName>logback</contextName>
-
+    <!--    获取yml配置的数据-->
     <springProperty scope="context" name="LOG_PATH" source="logging.path"/>
     <springProperty scope="context" name="CONSOLE_LEVEL" source="logging.output.level"/>
+    <springProperty scope="context" name="LOG_MAX_SIZE" source="logging.file.max-size"/>
+    <springProperty scope="context" name="LOG_TOTAL_SIZE_CAP" source="logging.file.total-size-cap"/>
+    <springProperty scope="context" name="LOG_MAX_HISTORY" source="logging.file.max-history"/>
 
+    <!--  日志文件名定义-->
     <property name="LOG_FILE" value="${LOG_PATH}/se.log"/>
     <property name="ERROR_LOG" value="${LOG_PATH}/error.log"/>
     <property name="SQL_LOG_FILE" value="${LOG_PATH}/sql.log"/>
+
+    <!--
+    https://logback.qos.ch/manual/layouts.html
+    日志输出格式：
+    %date 表示日期时间
+    %mdc mdc
+    %thread 表示线程名
+    %level 日志级别, DEBUG，INFO，WARN，ERROR，FATAL
+    %class 类的完整名称
+    %method method
+    %line 行号
+    %message 为信息
+    %n换行
+    %throwable 错误信息，默认值是full
+
+    https://logback.qos.ch/manual/layouts.html
+    日志颜色设置
+    -->
+    <!-- 记录文件日志的格式 -->
     <property name="FILE_LOG_PATTERN" value=
             "%d{yyyy-MM-dd HH:mm:ss} [%thread]-[%requestId]-[%userId]-[%-5level]-[%logger{50}:%L] %msg%n%throwable"/>
+    <!--    本地打印输出的样式-->
     <property name="STD_OUT_PATTERN"
-              value="%blue(%date{yyyy-MM-dd HH:mm:ss.SSS}) [%cyan(%thread)]-[%cyan(%requestId)]-[%userId]-[%highlight(%level)]-[%yellow(%class.%method:%line)] %message%n%throwable"/>
+              value="%blue(%date{yyyy-MM-dd HH:mm:ss.SSS}) [%cyan(%thread)]-[%yellow(%requestId)]-[%cyan(%userId)]-[%highlight(%level)]-[%yellow(%class.%method:%line)] %message%n%throwable"/>
 
+    <!--    本地输出日志-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.se.back.log.LogPatternLayout">
+                <pattern>${STD_OUT_PATTERN}</pattern>
+            </layout>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--    普通文件日志, 包含INFO WARNING ERROR-->
     <appender name="APPLICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE}</file>
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
@@ -25,22 +59,38 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxHistory>365</maxHistory>
-            <maxFileSize>1GB</maxFileSize>
-            <totalSizeCap>100GB</totalSizeCap>
+            <maxHistory>${LOG_MAX_HISTORY:-365}</maxHistory>
+            <maxFileSize>${LOG_MAX_SIZE:-200MB}</maxFileSize>
+            <totalSizeCap>${LOG_TOTAL_SIZE_CAP:-10GB}</totalSizeCap>
         </rollingPolicy>
     </appender>
 
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+
+    <!--    ERROR错误日志-->
+    <appender name="ERROR"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${ERROR_LOG}</file>
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="com.se.back.log.LogPatternLayout">
-                <pattern>${STD_OUT_PATTERN}</pattern>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
             </layout>
             <charset>UTF-8</charset>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${ERROR_LOG}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>${LOG_MAX_HISTORY:-365}</maxHistory>
+            <maxFileSize>${LOG_MAX_SIZE:-100MB}</maxFileSize>
+            <totalSizeCap>${LOG_TOTAL_SIZE_CAP:-10GB}</totalSizeCap>
+        </rollingPolicy>
+        <!-- 只打印错误日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
     </appender>
 
-    <appender name="mybatis_APPENDER"
+    <appender name="MYBATIS"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${SQL_LOG_FILE}</file>
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
@@ -57,43 +107,20 @@
         </rollingPolicy>
     </appender>
 
-    <appender name="ERROR"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${ERROR_LOG}</file>
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="com.se.back.log.LogPatternLayout">
-                <pattern>${FILE_LOG_PATTERN}</pattern>
-            </layout>
-            <charset>UTF-8</charset>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${ERROR_LOG}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxHistory>365</maxHistory>
-            <maxFileSize>1GB</maxFileSize>
-            <totalSizeCap>100GB</totalSizeCap>
-        </rollingPolicy>
-        <!-- 只打印错误日志 -->
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-    </appender>
-
     <!--    es可以在终端打印出trace语句,-->
     <!--    参考 https://guzalexander.com/2018/09/30/es-rest-client-trace-logging.html -->
     <logger name="tracer" level="TRACE" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
 
-    <root level="INFO">
+    <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="APPLICATION"/>
         <appender-ref ref="ERROR"/>
     </root>
 
     <logger name="mybatis" level="DEBUG" additivity="false">
-        <appender-ref ref="mybatis_APPENDER"/>
+        <appender-ref ref="MYBATIS"/>
     </logger>
 
 </configuration>

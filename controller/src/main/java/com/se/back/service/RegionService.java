@@ -1,4 +1,4 @@
-package com.se.back.controller.service;
+package com.se.back.service;
 
 import com.se.back.data.repo.es.dataclass.RegionDTO;
 

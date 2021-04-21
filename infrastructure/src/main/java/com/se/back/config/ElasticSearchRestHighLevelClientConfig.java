@@ -1,4 +1,4 @@
-package com.se.back.common.config;
+package com.se.back.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -41,7 +41,6 @@ public class ElasticSearchRestHighLevelClientConfig {
     @Value("${elasticsearch.ip.cluster}")
     String[] clusterNodes;
 
-    @Primary
     @Bean(value = "clusterHighLevelClient")
     public RestHighLevelClient makeClusterRestHighLevelClient() {
         // 参考 https://juejin.im/post/5ddde6a75188256e956b008b

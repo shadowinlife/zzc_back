@@ -1,4 +1,4 @@
-package com.se.back.controller.entity;
+package com.se.back.entity;
 
 /**
  * Controller层的日志封装类

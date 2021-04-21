@@ -1,4 +1,4 @@
-package com.se.back.controller.common.interceptor;
+package com.se.back.common.interceptor;
 
 import com.se.back.common.holder.UserInfo;
 import com.se.back.common.holder.UserInfoHolder;
@@ -31,11 +31,11 @@ public class UserInfoHandlerInterceptor implements HandlerInterceptor {
         String cookie = request.getHeader("jf-auth-cookie");
         UserInfo userInfo;
         if (cookie == null) {
-            cookie = UUID.randomUUID().toString();
+            cookie = UUID.randomUUID().toString().replace("-", "");
             userInfo = new UserInfo(cookie, UserType.ANONYMOUS, cookie);
         } else if (!cookieRepository.existsById(cookie)) {
             log.warn("cookie {} invalid", cookie);
-            cookie = UUID.randomUUID().toString();
+            cookie = UUID.randomUUID().toString().replace("-", "");
             userInfo = new UserInfo(cookie, UserType.ANONYMOUS, cookie);
         } else {
             CookieMapper cookieBean = cookieRepository.findById(cookie).get();

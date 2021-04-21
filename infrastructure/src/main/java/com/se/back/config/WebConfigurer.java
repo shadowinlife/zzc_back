@@ -1,8 +1,8 @@
-package com.se.back.controller.common.config;
+package com.se.back.config;
 
 
-import com.se.back.controller.common.interceptor.RequestIdHandlerInterceptor;
-import com.se.back.controller.common.interceptor.UserInfoHandlerInterceptor;
+import com.se.back.common.interceptor.RequestIdHandlerInterceptor;
+import com.se.back.common.interceptor.UserInfoHandlerInterceptor;
 import com.se.back.data.repo.redis.repo.CookieRepository;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

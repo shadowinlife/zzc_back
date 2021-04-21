@@ -33,10 +33,10 @@
     -->
     <!-- 记录文件日志的格式 -->
     <property name="FILE_LOG_PATTERN" value=
-            "%d{yyyy-MM-dd HH:mm:ss} [%thread]-[%requestId]-[%userId]-[%-5level]-[%logger{50}:%L] %msg%n%throwable"/>
+            "%d{yyyy-MM-dd HH:mm:ss} [%thread]-[requestId:%requestId]-[userId:%userId]-[%-5level]-[%class.%method:%line] %message%n%throwable"/>
     <!--    本地打印输出的样式-->
     <property name="STD_OUT_PATTERN"
-              value="%blue(%date{yyyy-MM-dd HH:mm:ss.SSS}) [%cyan(%thread)]-[%yellow(%requestId)]-[%cyan(%userId)]-[%highlight(%level)]-[%yellow(%class.%method:%line)] %message%n%throwable"/>
+              value="%blue(%date{yyyy-MM-dd HH:mm:ss.SSS}) [%cyan(%thread)]-[%yellow(requestId:%requestId)]-[%cyan(userId:%userId)]-[%highlight(%level)]-[%yellow(%class.%method:%line)] %message%n%throwable"/>
 
     <!--    本地输出日志-->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">

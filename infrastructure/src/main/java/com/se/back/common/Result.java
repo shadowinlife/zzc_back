@@ -19,9 +19,9 @@ public class Result<T> {
 
     private static final String REQUEST_ID = "requestId";
 
-    private static final String ERROR_CODE = "errorCode";
+    private static final String ERROR_CODE = "status";
 
-    private static final String ERROR_INFO = "errorInfo";
+    private static final String ERROR_INFO = "info";
 
     private static final String DATA = "data";
 

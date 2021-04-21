@@ -1,7 +1,7 @@
-package com.se.back.controller.service.impl;
+package com.se.back.service.impl;
 
-import com.se.back.controller.constant.RelationSearchConstant;
-import com.se.back.controller.service.RelationSearchService;
+import com.se.back.constant.RelationSearchConstant;
+import com.se.back.service.RelationSearchService;
 import com.se.back.data.repo.neo4j.dataclass.RelationShipDTO;
 import com.se.back.data.repo.neo4j.mapper.Neo4jRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +23,11 @@ import java.util.List;
 @Slf4j
 @Service
 public class RelationSearchServiceImpl implements RelationSearchService {
-    @Autowired
-    private Neo4jRepository neo4jRepository;
+    private final Neo4jRepository neo4jRepository;
+
+    public RelationSearchServiceImpl(Neo4jRepository neo4jRepository) {
+        this.neo4jRepository = neo4jRepository;
+    }
 
     /**
      * @param fromCompany 起始公司

@@ -10,7 +10,6 @@ import org.neo4j.driver.Session;
 import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Path;
 import org.neo4j.driver.types.Relationship;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -39,6 +38,7 @@ public class Neo4jRepository {
      * spring-boot-neo4j-starter-data 不支持多关系路径的查询.
      * <p>
      * 官方文档 https://neo4j.com/developer/java-driver-spring-boot-starter/
+     * 官方文档2 https://neo4j.github.io/neo4j-java-driver-spring-boot-starter/current/
      *
      * @param searchCql
      * @return

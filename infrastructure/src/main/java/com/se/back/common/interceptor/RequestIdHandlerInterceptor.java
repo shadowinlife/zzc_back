@@ -1,4 +1,4 @@
-package com.se.back.controller.common.interceptor;
+package com.se.back.common.interceptor;
 
 import com.se.back.common.holder.RequestIdHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,9 @@ public class RequestIdHandlerInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) {
+        /**
+         * 获取请求header中的requestId, 本次请求的所有日志中都有这个id
+         */
         String requestId = request.getHeader(REQUEST_ID_KEY);
         if (StringUtils.isBlank(requestId)) {
             requestId = RequestIdHolder.makeRequestId();

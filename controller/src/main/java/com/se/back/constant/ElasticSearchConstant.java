@@ -1,4 +1,4 @@
-package com.se.back.controller.constant;
+package com.se.back.constant;
 
 import java.util.Arrays;
 import java.util.HashSet;

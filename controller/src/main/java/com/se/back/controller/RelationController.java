@@ -1,14 +1,15 @@
-package com.se.back.controller.controller;
+package com.se.back.controller;
 
 import com.se.back.common.ResponseEnum;
 import com.se.back.common.Result;
-import com.se.back.controller.constant.RelationSearchConstant;
-import com.se.back.controller.entity.ao.RelationSearchAO;
-import com.se.back.controller.entity.vo.BasePageVO;
-import com.se.back.controller.service.RegionService;
-import com.se.back.controller.service.RelationSearchService;
+import com.se.back.common.holder.RequestIdHolder;
+import com.se.back.constant.RelationSearchConstant;
+import com.se.back.entity.ao.RelationSearchAO;
+import com.se.back.entity.vo.BasePageVO;
 import com.se.back.data.repo.es.dataclass.RegionDTO;
 import com.se.back.data.repo.neo4j.dataclass.RelationShipDTO;
+import com.se.back.service.RegionService;
+import com.se.back.service.RelationSearchService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,7 +48,7 @@ public class RelationController {
     public Result<Object> searchPathByCompany(@Valid @RequestBody RelationSearchAO relationSearchAO) {
         String fromCompany = relationSearchAO.getFromCompany();
         String toCompany = relationSearchAO.getToCompany();
-
+        String requestId = RequestIdHolder.getRequestId();
         for (int pathLength = RelationSearchConstant.QUERY_PATH_LENGTH_MIN_BY_COMPANY;
              pathLength <= RelationSearchConstant.QUERY_PATH_LENGTH_MAX_BY_COMPANY; pathLength++) {
             List<List<RelationShipDTO>> relationShipVOList = relationSearchService.searchPathByCompany(fromCompany, toCompany, pathLength);
@@ -57,11 +58,11 @@ public class RelationController {
                 BasePageVO<List<RelationShipDTO>> basePageVO = new BasePageVO<>();
                 basePageVO.setRelationship(relationShipVOList);
                 basePageVO.setTotalCount(length);
-                return Result.successResult(null, basePageVO);
+                return Result.successResult(requestId, basePageVO);
             }
         }
 
-        return Result.successResult(null, null);
+        return Result.successResult(requestId, null);
     }
 
     /**
@@ -74,6 +75,7 @@ public class RelationController {
     public Result<Object> searchPathByRegion(@Valid @RequestBody RelationSearchAO relationSearchAO) throws IOException {
         String fromRegion = relationSearchAO.getFromCompany();
         String toCompany = relationSearchAO.getToCompany();
+        String requestId = RequestIdHolder.getRequestId();
         // 获取详细的省市县信息
         RegionDTO regionDTO = regionService.makeRegionDto(fromRegion);
         if (regionDTO == null) {
@@ -92,11 +94,11 @@ public class RelationController {
                 BasePageVO<List<RelationShipDTO>> basePageVO = new BasePageVO<>();
                 basePageVO.setRelationship(relationShipVOList);
                 basePageVO.setTotalCount(length);
-                return Result.successResult(null, basePageVO);
+                return Result.successResult(requestId, basePageVO);
             }
         }
 
-        return Result.successResult(null, null);
+        return Result.successResult(requestId, null);
     }
 
 }

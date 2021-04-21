@@ -1,4 +1,4 @@
-package com.se.back.controller.entity.ao;
+package com.se.back.entity.ao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

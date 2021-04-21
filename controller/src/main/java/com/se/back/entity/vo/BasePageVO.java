@@ -1,4 +1,4 @@
-package com.se.back.controller.entity.vo;
+package com.se.back.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

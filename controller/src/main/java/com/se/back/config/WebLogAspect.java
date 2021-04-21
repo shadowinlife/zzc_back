@@ -1,7 +1,7 @@
-package com.se.back.controller.common.config;
+package com.se.back.config;
 
 import com.se.back.common.util.JsonUtil;
-import com.se.back.controller.entity.WebLog;
+import com.se.back.entity.WebLog;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -43,7 +43,7 @@ public class WebLogAspect {
      * 第三个*号：表示方法名，*号表示所有的方法
      * 后面括弧里面表示方法的参数，两个句点表示任何参数
      */
-    @Pointcut("execution(public * com.se.back.*.controller..*.*(..))")
+    @Pointcut("execution(public * com.se.back.controller..*.*(..))")
     public void webLog() {
     }
 

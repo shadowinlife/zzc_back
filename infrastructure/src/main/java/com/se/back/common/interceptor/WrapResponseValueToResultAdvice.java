@@ -1,4 +1,4 @@
-package com.se.back.controller.common.interceptor;
+package com.se.back.common.interceptor;
 
 import com.google.gson.JsonSyntaxException;
 import com.se.back.common.ResponseEnum;

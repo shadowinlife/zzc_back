@@ -17,7 +17,7 @@ public class RequestIdHandlerInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) {
-        String requestId = request.getHeader("jf-req-id");
+        String requestId = request.getHeader(REQUEST_ID_KEY);
         RequestIdHolder.setRequestId(requestId);
         return true;
     }

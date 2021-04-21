@@ -2,7 +2,6 @@ package com.se.back.controller.common.config;
 
 
 import com.se.back.controller.common.interceptor.RequestIdHandlerInterceptor;
-import com.se.back.controller.common.interceptor.RequestLoggerHandlerInterceptor;
 import com.se.back.controller.common.interceptor.UserInfoHandlerInterceptor;
 import com.se.back.data.repo.redis.repo.CookieRepository;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +28,5 @@ public class WebConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(
                 new UserInfoHandlerInterceptor(cookieRepository))
                 .excludePathPatterns(EXCLUDE_URL);
-        registry.addInterceptor(new RequestLoggerHandlerInterceptor());
     }
 }

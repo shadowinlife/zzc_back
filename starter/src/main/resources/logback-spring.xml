@@ -4,16 +4,16 @@
 
     <contextName>logback</contextName>
 
-    <property resource="application.properties"/>
-    <springProperty scope="context" name="LOG_PATH" source="se.logging.path"/>
-    <springProperty scope="context" name="CONSOLE_LEVEL" source="se.logging.console.level"/>
+    <springProperty scope="context" name="LOG_PATH" source="logging.path"/>
+    <springProperty scope="context" name="CONSOLE_LEVEL" source="logging.output.level"/>
 
     <property name="LOG_FILE" value="${LOG_PATH}/se.log"/>
     <property name="ERROR_LOG" value="${LOG_PATH}/error.log"/>
     <property name="SQL_LOG_FILE" value="${LOG_PATH}/sql.log"/>
     <property name="FILE_LOG_PATTERN" value=
-            "%d{yyyy-MM-dd HH:mm:ss} [%thread] RequestId: %requestId UserId:%userId Level:%-5level %logger{50}:%L - %msg%n"/>
-
+            "%d{yyyy-MM-dd HH:mm:ss} [%thread]-[%requestId]-[%userId]-[%-5level]-[%logger{50}:%L] %msg%n%throwable"/>
+    <property name="STD_OUT_PATTERN"
+              value="%blue(%date{yyyy-MM-dd HH:mm:ss.SSS}) [%cyan(%thread)]-[%cyan(%requestId)]-[%userId]-[%highlight(%level)]-[%yellow(%class.%method:%line)] %message%n%throwable"/>
 
     <appender name="APPLICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE}</file>
@@ -34,13 +34,10 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="com.se.back.log.LogPatternLayout">
-                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <pattern>${STD_OUT_PATTERN}</pattern>
             </layout>
             <charset>UTF-8</charset>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>${CONSOLE_LEVEL}</level>
-        </filter>
     </appender>
 
     <appender name="mybatis_APPENDER"
@@ -82,6 +79,12 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
+
+    <!--    es可以在终端打印出trace语句,-->
+    <!--    参考 https://guzalexander.com/2018/09/30/es-rest-client-trace-logging.html -->
+    <logger name="tracer" level="TRACE" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>

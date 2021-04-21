@@ -1,8 +1,8 @@
 package com.se.back.controller.common.interceptor;
 
-import com.se.back.data.enums.UserType;
 import com.se.back.common.holder.UserInfo;
 import com.se.back.common.holder.UserInfoHolder;
+import com.se.back.data.enums.UserType;
 import com.se.back.data.repo.redis.mapper.CookieMapper;
 import com.se.back.data.repo.redis.repo.CookieRepository;
 import lombok.extern.slf4j.Slf4j;

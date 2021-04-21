@@ -31,7 +31,6 @@ import org.springframework.context.annotation.PropertySource;
         type = FilterType.ASSIGNABLE_TYPE,
         classes = {Application.class}
     ))
-@PropertySource({"${se.app.prop.location}"})
 public class ScanConfiguration {
     // load config file
 }

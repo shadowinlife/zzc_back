@@ -10,6 +10,7 @@ import com.se.back.data.repo.es.dataclass.RegionDTO;
 import com.se.back.data.repo.neo4j.dataclass.RelationShipDTO;
 import com.se.back.service.RegionService;
 import com.se.back.service.RelationSearchService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +28,7 @@ import java.util.List;
  * @version: 1.0
  */
 
+@Slf4j
 @RestController
 @RequestMapping("relation")
 public class RelationController {
@@ -81,7 +83,7 @@ public class RelationController {
         if (regionDTO == null) {
             return Result.errResult(null, ResponseEnum.RELATION_NO_REGION);
         }
-
+        log.error("fuck hot reload---fuck");
         String province = regionDTO.getProvince();
         String city = regionDTO.getCity();
         String county = regionDTO.getCounty();

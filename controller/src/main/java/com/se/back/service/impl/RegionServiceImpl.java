@@ -68,7 +68,6 @@ public class RegionServiceImpl implements RegionService {
         List<RegionDTO> regionDTOListByCity = regionRepository.searchStringQuery(
                 ElasticSearchConstant.SNIFFER_CITY_INDEX_NAME, originRegion, RegionDTO.class);
         for (RegionDTO regionDTO : regionDTOListByCity) {
-            System.out.println("regionDTO = " + regionDTO);
             String region = regionDTO.getRegion();
             if (StringUtils.isEmpty(region)) {
                 continue;
@@ -77,11 +76,9 @@ public class RegionServiceImpl implements RegionService {
                 return regionDTO;
             }
             String cityAlias = regionDTO.getAlias();
-            System.out.println("cityAlias = " + cityAlias);
             if (StringUtils.isEmpty(cityAlias)) {
                 continue;
             }
-            System.out.println("cityAlias = " + cityAlias);
             if (StringUtils.contains(originRegion, cityAlias)) {
                 regionDTO = filterNoiseCity(regionDTO, originRegion);
                 if (regionDTO != null) {
@@ -108,7 +105,7 @@ public class RegionServiceImpl implements RegionService {
     }
 
     /**
-     * 过滤掉 大同区商业公司, 可能隶属于 山西大同市 也可能隶属于 黑龙江大庆市 大同区的情况
+     * 过滤掉 大同区商业公司 这种关键词, 可能隶属于 山西大同市 也可能隶属于 黑龙江大庆市 大同区的情况
      *
      * @param regionDTO
      * @param regionName

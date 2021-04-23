@@ -54,7 +54,6 @@ public class RelationController {
         for (int pathLength = RelationSearchConstant.QUERY_PATH_LENGTH_MIN_BY_COMPANY;
              pathLength <= RelationSearchConstant.QUERY_PATH_LENGTH_MAX_BY_COMPANY; pathLength++) {
             List<List<RelationShipDTO>> relationShipVOList = relationSearchService.searchPathByCompany(fromCompany, toCompany, pathLength);
-            System.out.println("relationShipVOList = " + relationShipVOList);
             long length = relationShipVOList.size();
             if (length > 0) {
                 BasePageVO<List<RelationShipDTO>> basePageVO = new BasePageVO<>();
@@ -83,7 +82,7 @@ public class RelationController {
         if (regionDTO == null) {
             return Result.errResult(null, ResponseEnum.RELATION_NO_REGION);
         }
-        log.error("fuck hot reload---fuck");
+        log.error("fuck-123--hot234reload---fuck");
         String province = regionDTO.getProvince();
         String city = regionDTO.getCity();
         String county = regionDTO.getCounty();

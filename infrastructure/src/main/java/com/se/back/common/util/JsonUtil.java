@@ -13,10 +13,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonUtil {
     private final static ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * 数据转json String
+     * @param o
+     * @return
+     * @throws JsonProcessingException
+     */
     public static String makeJson(Object o) throws JsonProcessingException {
         return mapper.writeValueAsString(o);
     }
 
+    /**
+     * json String 转 dataclass
+     * @param data
+     * @param valueType
+     * @param <T>
+     * @return
+     * @throws JsonProcessingException
+     */
     public static <T> T makeObject(String data, Class<T> valueType) throws JsonProcessingException {
 
         return mapper.readValue(data, valueType);

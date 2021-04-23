@@ -1,8 +1,8 @@
 package com.se.back.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.se.back.common.util.JsonUtil;
 import lombok.Data;
 import lombok.ToString;
 
@@ -41,7 +41,7 @@ public class Result<T> {
     }
 
     public static <T> Result<T> successResult(String requestId, T data) {
-    return new Result<>(requestId, ResponseEnum.SUCCESS.getCode(), ResponseEnum.SUCCESS.getMessage(), data);
+        return new Result<>(requestId, ResponseEnum.SUCCESS.getCode(), ResponseEnum.SUCCESS.getMessage(), data);
     }
 
     public static <T> Result<T> errResult(
@@ -58,20 +58,14 @@ public class Result<T> {
         return new Result<T>(requestId, errorCode, message, null);
     }
 
-    public static String successResultString(String requestId, Object data) {
-        Result<Object> result = new Result<>(requestId, null, null, data);
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty(REQUEST_ID, result.getRequestId());
-//        jsonObject.addProperty(ERROR_CODE, result.getStatus());
-        jsonObject.addProperty(ERROR_INFO, result.getInfo());
-        jsonObject.addProperty(DATA, result.getData().toString());
-        return jsonObject.toString();
+    public static String successResultString(String requestId, Object data) throws JsonProcessingException {
+        Result<Object> result = successResult(requestId, data);
+        return JsonUtil.makeJson(result);
     }
 
-    public static <T> Result<T> fromJson(String json, Class<T> clazz) {
-        Type objectType = type(Result.class, clazz);
-        Gson gson = new Gson();
-        return gson.fromJson(json, objectType);
+    public static <T> Result<T> fromJson(String json, Class<T> clazz) throws JsonProcessingException {
+        T data = JsonUtil.makeObject(json, clazz);
+        return successResult(null, data);
     }
 
     static <T> ParameterizedType type(final Class<T> raw, final Type... args) {

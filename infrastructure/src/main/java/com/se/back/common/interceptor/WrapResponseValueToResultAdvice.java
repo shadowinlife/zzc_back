@@ -1,10 +1,11 @@
 package com.se.back.common.interceptor;
 
-import com.google.gson.JsonSyntaxException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.se.back.common.ResponseEnum;
 import com.se.back.common.Result;
 import com.se.back.common.holder.RequestIdHolder;
 import com.se.back.common.util.LogicException;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ public class WrapResponseValueToResultAdvice implements ResponseBodyAdvice<Objec
         return methodParameter.getMethod().getDeclaringClass().getName().startsWith(SCAN_PACKAGE);
     }
 
+    @SneakyThrows
     @Override
     public Object beforeBodyWrite(Object o,
                                   MethodParameter methodParameter,
@@ -85,10 +87,10 @@ public class WrapResponseValueToResultAdvice implements ResponseBodyAdvice<Objec
     /**
      * json 格式非法
      */
-    @ExceptionHandler(JsonSyntaxException.class)
+    @ExceptionHandler(JsonProcessingException.class)
     @ResponseBody
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public Result<String> handleInvalidJson(JsonSyntaxException e) {
+    public Result<String> handleInvalidJson(JsonProcessingException e) {
         log.error("Input Invalid Content", e);
         return Result.errResult(RequestIdHolder.getRequestId(), ResponseEnum.PARAMS_ERROR);
     }

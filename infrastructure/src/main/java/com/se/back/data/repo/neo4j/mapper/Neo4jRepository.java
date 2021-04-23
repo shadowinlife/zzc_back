@@ -43,7 +43,6 @@ public class Neo4jRepository {
      * @param searchCql
      * @return
      */
-//    @Retryable(value = Exception.class)
     public List<List<RelationShipDTO>> searchPath(String searchCql) {
         log.info("op=RecordSearchCql, searchCql=[{}]", searchCql);
         // 拼接的返回值

@@ -16,6 +16,18 @@ public class RegionDTO {
     private String cityAlias;
     private String county;
 
+    public RegionDTO() {
+    }
+
+    public RegionDTO(String region, String alias, String province, String provinceAlias, String city, String cityAlias, String county) {
+        this.region = region;
+        this.alias = alias;
+        this.province = province;
+        this.provinceAlias = provinceAlias;
+        this.city = city;
+        this.cityAlias = cityAlias;
+        this.county = county;
+    }
 
     public String getRegion() {
         return region;

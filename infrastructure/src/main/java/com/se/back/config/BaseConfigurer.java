@@ -1,4 +1,4 @@
-package com.se.back;
+package com.se.back.config;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

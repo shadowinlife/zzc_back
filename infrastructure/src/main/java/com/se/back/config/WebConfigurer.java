@@ -1,10 +1,10 @@
 package com.se.back.config;
 
 
-import com.se.back.common.interceptor.RequestIdHandlerInterceptor;
 import com.se.back.common.interceptor.UserInfoHandlerInterceptor;
 import com.se.back.data.repo.redis.repo.CookieRepository;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -23,8 +23,8 @@ public class WebConfigurer implements WebMvcConfigurer {
     }
 
     @Override
+    @Order(value = -99)
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RequestIdHandlerInterceptor());
         registry.addInterceptor(
                 new UserInfoHandlerInterceptor(cookieRepository))
                 .excludePathPatterns(EXCLUDE_URL);

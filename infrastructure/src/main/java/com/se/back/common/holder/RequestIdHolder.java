@@ -1,27 +1,42 @@
 package com.se.back.common.holder;
 
+import org.slf4j.MDC;
+
 import java.util.UUID;
 
 /**
- * @author mgong
+ * 利用slf4j 的mdc, 给当前请求的每一条日志增加一个唯一的key
+ * https://juejin.cn/post/6950772721139580936
  */
 public class RequestIdHolder {
+    public static final String LOG_TRACE_ID_KEY = "requestId";
 
-    private static final ThreadLocal<String> REQUEST_ID_HOLDER = new ThreadLocal<>();
-
-    public static String getRequestId() {
-        return REQUEST_ID_HOLDER.get();
-    }
-
-    public static String makeRequestId() {
+    /**
+     * 生成 uuid的 日志跟踪log
+     *
+     * @return uuid
+     */
+    public static String makeLogTraceId() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
-    public static void setRequestId(String requestId) {
-        REQUEST_ID_HOLDER.set(requestId);
+    public static void setRequestId(String logTraceId) {
+        MDC.put(LOG_TRACE_ID_KEY, logTraceId);
     }
 
-    public static void reset() {
-        REQUEST_ID_HOLDER.remove();
+    public static String getRequestId() {
+        String logTraceId = MDC.get(LOG_TRACE_ID_KEY);
+        if (logTraceId == null) {
+            return "";
+        }
+        return logTraceId;
+    }
+
+    public static void removeRequestId() {
+        MDC.remove(LOG_TRACE_ID_KEY);
+    }
+
+    public static void clearRequestId() {
+        MDC.clear();
     }
 }

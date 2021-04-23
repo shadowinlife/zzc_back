@@ -82,7 +82,7 @@ public class RelationController {
         if (regionDTO == null) {
             return Result.errResult(null, ResponseEnum.RELATION_NO_REGION);
         }
-        log.error("fuck-123--hot234reload---fuck");
+        log.error("fuck-fuck-123-duck-fuck");
         String province = regionDTO.getProvince();
         String city = regionDTO.getCity();
         String county = regionDTO.getCounty();

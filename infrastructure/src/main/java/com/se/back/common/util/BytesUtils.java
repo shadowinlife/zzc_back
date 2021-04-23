@@ -2,7 +2,7 @@ package com.se.back.common.util;
 
 
 import cn.hutool.crypto.SecureUtil;
-import com.se.back.BaseConfigurer;
+import com.se.back.config.BaseConfigurer;
 import org.springframework.stereotype.Component;
 
 /**
